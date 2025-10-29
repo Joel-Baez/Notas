@@ -1,0 +1,166 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f9;
+    color: #333;
+}
+
+.cabecera {
+    background: #002b5c;
+    color: #fff;
+    padding: 1rem;
+}
+
+.cabecera .contenedor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.menu a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.menu a:hover {
+    text-decoration: underline;
+}
+
+.contenido {
+    padding: 2rem;
+}
+
+.panel h2 {
+    margin-top: 0;
+}
+
+.table, table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+    background: #fff;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+table thead {
+    background: #e6ecf5;
+}
+
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.boton, button {
+    background: #005fa3;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.boton:hover, button:hover {
+    background: #00467a;
+}
+
+.peligro {
+    background: #c0392b;
+}
+
+.peligro:hover {
+    background: #922b21;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 6px;
+}
+
+.formulario .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formulario input,
+.formulario select {
+    padding: 0.5rem;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+}
+
+.alerta {
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.alerta-exito {
+    background: #d4edda;
+    color: #155724;
+}
+
+.alerta-error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.alerta-info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.acciones {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.opciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.tarjeta {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.fila {
+    display: flex;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .fila {
+        flex-direction: column;
+    }
+
+    .menu {
+        flex-wrap: wrap;
+    }
+}
