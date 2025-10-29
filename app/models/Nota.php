@@ -49,6 +49,21 @@ final class Nota extends Modelo
         return $consulta->fetchAll();
     }
 
+    public static function todas(): array
+    {
+        $sql = 'SELECT n.id, n.materia, m.nombre AS materia_nombre, n.estudiante, e.nombre AS estudiante_nombre,
+                       n.actividad, n.nota
+                FROM notas n
+                JOIN estudiantes e ON e.codigo = n.estudiante
+                JOIN materias m ON m.codigo = n.materia
+                ORDER BY e.nombre, m.nombre, n.actividad';
+        $registros = self::db()->query($sql)->fetchAll();
+        foreach ($registros as &$registro) {
+            $registro['nota'] = self::formatearPromedio((float) $registro['nota']);
+        }
+        return $registros;
+    }
+
     public static function estudiantesPorMateria(string $codigoMateria): array
     {
         $sql = 'SELECT e.codigo, e.nombre, AVG(n.nota) AS promedio

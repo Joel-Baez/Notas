@@ -23,17 +23,18 @@ final class Materia extends Modelo
 
     public static function porEstudiante(string $codigoEstudiante): array
     {
-        $sql = 'SELECT m.codigo, m.nombre, AVG(n.nota) AS promedio
-                FROM materias m
-                JOIN notas n ON n.materia = m.codigo
-                WHERE n.estudiante = :estudiante
+        $sql = 'SELECT m.codigo, m.nombre, COALESCE(AVG(n.nota), 0) AS promedio
+                FROM estudiantes e
+                JOIN materias m ON m.programa = e.programa
+                LEFT JOIN notas n ON n.materia = m.codigo AND n.estudiante = e.codigo
+                WHERE e.codigo = :estudiante
                 GROUP BY m.codigo, m.nombre
                 ORDER BY m.nombre';
         $consulta = self::db()->prepare($sql);
         $consulta->execute(['estudiante' => $codigoEstudiante]);
         $materias = $consulta->fetchAll();
         foreach ($materias as &$materia) {
-            $materia['promedio'] = Nota::formatearPromedio($materia['promedio']);
+            $materia['promedio'] = Nota::formatearPromedio((float) $materia['promedio']);
         }
         return $materias;
     }

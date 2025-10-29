@@ -1,8 +1,41 @@
 <section>
     <div class="encabezado">
-        <h2>Notas por estudiante y materia</h2>
+        <h2>Notas registradas</h2>
         <a class="boton" href="?entidad=notas&accion=crear">Registrar nota</a>
     </div>
+    <?php if ($notas): ?>
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Materia</th>
+                    <th>Actividad</th>
+                    <th>Nota</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($notas as $nota): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($nota['estudiante_nombre']) ?></td>
+                        <td><?= htmlspecialchars($nota['materia_nombre']) ?></td>
+                        <td><?= htmlspecialchars($nota['actividad']) ?></td>
+                        <td><?= number_format($nota['nota'], 2) ?></td>
+                        <td class="acciones-tabla">
+                            <a href="?entidad=notas&accion=editar&id=<?= urlencode((string) $nota['id']) ?>">Editar</a>
+                            <a href="?entidad=notas&accion=confirmarEliminar&id=<?= urlencode((string) $nota['id']) ?>">Eliminar</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p>No hay notas registradas.</p>
+    <?php endif; ?>
+</section>
+
+<section>
+    <h3>Promedios por estudiante y materia</h3>
     <?php if ($resumen): ?>
         <table class="tabla">
             <thead>
@@ -28,6 +61,6 @@
             </tbody>
         </table>
     <?php else: ?>
-        <p>No hay notas registradas.</p>
+        <p>Aún no hay promedios calculados.</p>
     <?php endif; ?>
 </section>

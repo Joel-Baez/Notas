@@ -12,6 +12,7 @@ final class ControladorNotas extends ControladorBase
     {
         $this->vista('notas/lista', [
             'titulo' => 'Notas registradas',
+            'notas' => Nota::todas(),
             'resumen' => Nota::resumen(),
         ]);
     }
