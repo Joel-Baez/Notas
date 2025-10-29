@@ -40,15 +40,16 @@ El proyecto utiliza las siguientes variables de entorno opcionales para conectar
 - **Estudiantes**: gestión completa respetando las restricciones sobre códigos y notas registradas.
 - **Materias**: administración por programa de formación controlando dependencias con estudiantes y notas.
 - **Notas**: registro, actualización, eliminación individual y eliminación masiva por estudiante, controlando que las materias pertenezcan al programa del estudiante y que las notas estén en el rango permitido (0-5, dos decimales).
+- **Autenticación**: inicio de sesión mediante el código del estudiante como usuario y el correo electrónico como contraseña para acceder al panel.
 - **Reportes**: vistas para estudiantes por programa, materias por programa, promedios por estudiante y por materia, así como detalle de notas por actividad.
 
 ## Estructura del proyecto
 
 ```
 app/
-├── config/        # Conexión a la base de datos (PDO)
-├── controllers/   # Controladores MVC
-├── models/        # Modelos de dominio
+├── controllers/   # Controladores MVC en español
+├── database/      # Clase de conexión PDO (Conexion.php)
+├── models/        # Modelos de dominio en español
 └── views/         # Vistas agrupadas por entidad y layout principal
 public/
 ├── assets/css/    # Recursos estáticos
@@ -59,4 +60,4 @@ public/
 
 - Todas las operaciones de eliminación solicitan confirmación antes de ejecutarse.
 - El diseño se basa únicamente en HTML y CSS para mantener la simplicidad del proyecto.
-- Para adaptar la conexión a otra base de datos, actualice las variables de entorno o modifique `app/config/Database.php`.
+- Para adaptar la conexión a otra base de datos, actualice las variables de entorno o modifique `app/database/Conexion.php`.

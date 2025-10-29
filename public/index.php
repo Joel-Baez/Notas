@@ -1,77 +1,57 @@
 <?php
 
-use App\Controllers\GradeController;
-use App\Controllers\ProgramController;
-use App\Controllers\StudentController;
-use App\Controllers\SubjectController;
+use App\Controllers\ControladorInicio;
+use App\Controllers\ControladorProgramas;
+use App\Controllers\ControladorEstudiantes;
+use App\Controllers\ControladorMaterias;
+use App\Controllers\ControladorNotas;
+use App\Controllers\ControladorSesion;
+
+session_start();
 
 spl_autoload_register(function (string $class) {
     if (str_starts_with($class, 'App\\')) {
-        $path = __DIR__ . '/../' . str_replace('App\\', 'app/', $class) . '.php';
-        $path = str_replace('\\', '/', $path);
-        if (file_exists($path)) {
-            require_once $path;
+        $ruta = __DIR__ . '/../' . str_replace('App\\', 'app/', $class) . '.php';
+        $ruta = str_replace('\\', '/', $ruta);
+        if (is_file($ruta)) {
+            require_once $ruta;
         }
     }
 });
 
-$entity = $_GET['entity'] ?? 'home';
-$action = $_GET['action'] ?? 'index';
+$entidad = $_GET['entidad'] ?? 'inicio';
+$accion = $_GET['accion'] ?? 'index';
 
-switch ($entity) {
-    case 'programs':
-        $controller = new ProgramController();
-        match ($action) {
-            'create' => $controller->create(),
-            'store' => $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->store() : $controller->index(),
-            'edit' => isset($_GET['code']) ? $controller->edit($_GET['code']) : $controller->index(),
-            'update' => isset($_GET['code']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->update($_GET['code']) : $controller->index(),
-            'confirmDelete' => isset($_GET['code']) ? $controller->confirmDelete($_GET['code']) : $controller->index(),
-            'destroy' => isset($_GET['code']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->destroy($_GET['code']) : $controller->index(),
-            'show' => isset($_GET['code']) ? $controller->show($_GET['code']) : $controller->index(),
-            default => $controller->index(),
-        };
-        break;
-    case 'students':
-        $controller = new StudentController();
-        match ($action) {
-            'create' => $controller->create(),
-            'store' => $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->store() : $controller->index(),
-            'edit' => isset($_GET['code']) ? $controller->edit($_GET['code']) : $controller->index(),
-            'update' => isset($_GET['code']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->update($_GET['code']) : $controller->index(),
-            'confirmDelete' => isset($_GET['code']) ? $controller->confirmDelete($_GET['code']) : $controller->index(),
-            'destroy' => isset($_GET['code']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->destroy($_GET['code']) : $controller->index(),
-            'show' => isset($_GET['code']) ? $controller->show($_GET['code']) : $controller->index(),
-            default => $controller->index(),
-        };
-        break;
-    case 'subjects':
-        $controller = new SubjectController();
-        match ($action) {
-            'create' => $controller->create(),
-            'store' => $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->store() : $controller->index(),
-            'edit' => isset($_GET['code']) ? $controller->edit($_GET['code']) : $controller->index(),
-            'update' => isset($_GET['code']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->update($_GET['code']) : $controller->index(),
-            'confirmDelete' => isset($_GET['code']) ? $controller->confirmDelete($_GET['code']) : $controller->index(),
-            'destroy' => isset($_GET['code']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->destroy($_GET['code']) : $controller->index(),
-            'show' => isset($_GET['code']) ? $controller->show($_GET['code']) : $controller->index(),
-            default => $controller->index(),
-        };
-        break;
-    case 'grades':
-        $controller = new GradeController();
-        match ($action) {
-            'create' => $controller->create(),
-            'store' => $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->store() : $controller->index(),
-            'edit' => (isset($_GET['subject'], $_GET['student'], $_GET['activity'])) ? $controller->edit($_GET['subject'], $_GET['student'], $_GET['activity']) : $controller->index(),
-            'update' => (isset($_GET['subject'], $_GET['student'], $_GET['activity'])) && $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->update($_GET['subject'], $_GET['student'], $_GET['activity']) : $controller->index(),
-            'confirmDelete' => (isset($_GET['subject'], $_GET['student'], $_GET['activity'])) ? $controller->confirmDelete($_GET['subject'], $_GET['student'], $_GET['activity']) : $controller->index(),
-            'destroy' => (isset($_GET['subject'], $_GET['student'], $_GET['activity'])) && $_SERVER['REQUEST_METHOD'] === 'POST' ? $controller->destroy($_GET['subject'], $_GET['student'], $_GET['activity']) : $controller->index(),
-            'deleteAllForStudent' => isset($_GET['student']) ? $controller->deleteAllForStudent($_GET['student']) : $controller->index(),
-            default => $controller->index(),
-        };
-        break;
-    default:
-        include __DIR__ . '/../app/views/home/index.php';
-        break;
+if (empty($_SESSION['usuario']) && $entidad !== 'sesion') {
+    $entidad = 'sesion';
+    $accion = 'iniciar';
 }
+
+$controladores = [
+    'inicio' => ControladorInicio::class,
+    'programas' => ControladorProgramas::class,
+    'estudiantes' => ControladorEstudiantes::class,
+    'materias' => ControladorMaterias::class,
+    'notas' => ControladorNotas::class,
+    'sesion' => ControladorSesion::class,
+];
+
+if (!isset($controladores[$entidad])) {
+    http_response_code(404);
+    echo 'Ruta no encontrada';
+    exit;
+}
+
+$controlador = new ($controladores[$entidad])();
+
+if (!method_exists($controlador, $accion)) {
+    $accion = $entidad === 'inicio' ? 'mostrar' : 'index';
+}
+
+$metodo = new ReflectionMethod($controlador, $accion);
+$argumentos = [];
+foreach ($metodo->getParameters() as $parametro) {
+    $argumentos[] = $_GET[$parametro->getName()] ?? '';
+}
+
+$metodo->invokeArgs($controlador, $argumentos);
