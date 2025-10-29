@@ -71,23 +71,24 @@ INSERT INTO `materias` (`codigo`, `nombre`, `programa`) VALUES
 --
 
 CREATE TABLE `notas` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `materia` varchar(4) NOT NULL,
   `estudiante` varchar(5) NOT NULL,
   `actividad` varchar(50) NOT NULL,
   `nota` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`materia`, `estudiante`, `actividad`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `notas`
 --
 
-INSERT INTO `notas` (`materia`, `estudiante`, `actividad`, `nota`) VALUES
-('1101', '10001', 'Ejemplo 1', 3.00),
-('1101', '10002', 'Ejemplo 1', 4.00),
-('1102', '10001', 'Ejemplo 2', 3.00),
-('1102', '10002', 'Ejemplo 2', 3.00),
-('2201', '10003', 'Act. 1', 3.50);
+INSERT INTO `notas` (`id`, `materia`, `estudiante`, `actividad`, `nota`) VALUES
+(1, '1101', '10001', 'Ejemplo 1', 3.00),
+(2, '1101', '10002', 'Ejemplo 1', 4.00),
+(3, '1102', '10001', 'Ejemplo 2', 3.00),
+(4, '1102', '10002', 'Ejemplo 2', 3.00),
+(5, '2201', '10003', 'Act. 1', 3.50);
 
 -- --------------------------------------------------------
 
@@ -118,7 +119,8 @@ ALTER TABLE `materias`
   ADD KEY `fk_programas_materia` (`programa`);
 
 ALTER TABLE `notas`
-  ADD KEY `fk_estudiantes_nota` (`estudiante`);
+  ADD KEY `fk_estudiantes_nota` (`estudiante`),
+  ADD KEY `fk_materias_nota` (`materia`);
 
 ALTER TABLE `estudiantes`
   ADD CONSTRAINT `fk_programas_estudiante` FOREIGN KEY (`programa`) REFERENCES `programas` (`codigo`);

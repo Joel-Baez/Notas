@@ -20,7 +20,7 @@ final class ControladorNotas extends ControladorBase
     {
         $this->vista('notas/formulario', [
             'titulo' => 'Registrar nota',
-            'nota' => ['materia' => '', 'estudiante' => '', 'actividad' => '', 'nota' => ''],
+            'nota' => ['id' => null, 'materia' => '', 'estudiante' => '', 'actividad' => '', 'nota' => ''],
             'estudiantes' => Estudiante::todos(),
             'materias' => Materia::todas(),
             'accion' => 'guardar',
@@ -46,9 +46,9 @@ final class ControladorNotas extends ControladorBase
         $this->redirigir('?entidad=notas');
     }
 
-    public function editar(string $materia, string $estudiante, string $actividad): void
+    public function editar(string $id): void
     {
-        $nota = Nota::obtener($materia, $estudiante, $actividad);
+        $nota = Nota::obtener((int) $id);
         if (!$nota) {
             $this->flash('error', 'Nota no encontrada.');
             $this->redirigir('?entidad=notas');
@@ -64,28 +64,35 @@ final class ControladorNotas extends ControladorBase
         ]);
     }
 
-    public function actualizar(string $materia, string $estudiante, string $actividad): void
+    public function actualizar(string $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirigir('?entidad=notas');
             return;
         }
 
-        $nota = (float) ($_POST['nota'] ?? 0);
-        if ($nota <= 0 || $nota >= 5) {
-            $this->flash('error', 'La nota debe ser mayor a 0 y menor a 5.');
-            $this->redirigir('?entidad=notas&accion=editar&materia=' . $materia . '&estudiante=' . $estudiante . '&actividad=' . urlencode($actividad));
+        $registro = Nota::obtener((int) $id);
+        if (!$registro) {
+            $this->flash('error', 'Nota no encontrada.');
+            $this->redirigir('?entidad=notas');
             return;
         }
 
-        Nota::actualizar($materia, $estudiante, $actividad, $nota);
+        $nota = (float) ($_POST['nota'] ?? 0);
+        if ($nota <= 0 || $nota > 5) {
+            $this->flash('error', 'La nota debe ser mayor a 0 y menor o igual a 5.');
+            $this->redirigir('?entidad=notas&accion=editar&id=' . urlencode($id));
+            return;
+        }
+
+        Nota::actualizar((int) $id, $nota);
         $this->flash('exito', 'Nota actualizada.');
         $this->redirigir('?entidad=notas');
     }
 
-    public function confirmarEliminar(string $materia, string $estudiante, string $actividad): void
+    public function confirmarEliminar(string $id): void
     {
-        $nota = Nota::obtener($materia, $estudiante, $actividad);
+        $nota = Nota::obtener((int) $id);
         if (!$nota) {
             $this->flash('error', 'Nota no encontrada.');
             $this->redirigir('?entidad=notas');
@@ -98,14 +105,14 @@ final class ControladorNotas extends ControladorBase
         ]);
     }
 
-    public function eliminar(string $materia, string $estudiante, string $actividad): void
+    public function eliminar(string $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirigir('?entidad=notas');
             return;
         }
 
-        Nota::eliminar($materia, $estudiante, $actividad);
+        Nota::eliminar((int) $id);
         $this->flash('exito', 'Nota eliminada.');
         $this->redirigir('?entidad=notas');
     }
@@ -146,7 +153,7 @@ final class ControladorNotas extends ControladorBase
             return false;
         }
 
-        if ($datos['nota'] <= 0 || $datos['nota'] >= 5) {
+        if ($datos['nota'] <= 0 || $datos['nota'] > 5) {
             return false;
         }
 

@@ -16,25 +16,19 @@ final class Nota extends Modelo
         ]);
     }
 
-    public static function actualizar(string $materia, string $estudiante, string $actividad, float $nota): bool
+    public static function actualizar(int $id, float $nota): bool
     {
-        $sql = 'UPDATE notas SET nota = :nota WHERE materia = :materia AND estudiante = :estudiante AND actividad = :actividad';
+        $sql = 'UPDATE notas SET nota = :nota WHERE id = :id';
         return self::db()->prepare($sql)->execute([
             'nota' => self::normalizar($nota),
-            'materia' => $materia,
-            'estudiante' => $estudiante,
-            'actividad' => $actividad,
+            'id' => $id,
         ]);
     }
 
-    public static function eliminar(string $materia, string $estudiante, string $actividad): bool
+    public static function eliminar(int $id): bool
     {
-        $sql = 'DELETE FROM notas WHERE materia = :materia AND estudiante = :estudiante AND actividad = :actividad';
-        return self::db()->prepare($sql)->execute([
-            'materia' => $materia,
-            'estudiante' => $estudiante,
-            'actividad' => $actividad,
-        ]);
+        $sql = 'DELETE FROM notas WHERE id = :id';
+        return self::db()->prepare($sql)->execute(['id' => $id]);
     }
 
     public static function eliminarPorEstudiante(string $estudiante): bool
@@ -45,7 +39,7 @@ final class Nota extends Modelo
 
     public static function porEstudiante(string $codigoEstudiante): array
     {
-        $sql = 'SELECT n.materia, m.nombre AS materia_nombre, n.actividad, n.nota
+        $sql = 'SELECT n.id, n.materia, m.nombre AS materia_nombre, n.actividad, n.nota
                 FROM notas n
                 JOIN materias m ON m.codigo = n.materia
                 WHERE n.estudiante = :estudiante
@@ -110,17 +104,11 @@ final class Nota extends Modelo
         return self::formatearPromedio($promedio ?: 0.0);
     }
 
-    public static function obtener(string $materia, string $estudiante, string $actividad): ?array
+    public static function obtener(int $id): ?array
     {
-        $sql = 'SELECT materia, estudiante, actividad, nota
-                FROM notas
-                WHERE materia = :materia AND estudiante = :estudiante AND actividad = :actividad';
+        $sql = 'SELECT id, materia, estudiante, actividad, nota FROM notas WHERE id = :id';
         $consulta = self::db()->prepare($sql);
-        $consulta->execute([
-            'materia' => $materia,
-            'estudiante' => $estudiante,
-            'actividad' => $actividad,
-        ]);
+        $consulta->execute(['id' => $id]);
         $nota = $consulta->fetch();
         return $nota ?: null;
     }
@@ -142,7 +130,7 @@ final class Nota extends Modelo
 
     private static function normalizar(float $valor): float
     {
-        $limpio = max(0.01, min(4.99, $valor));
+        $limpio = max(0.01, min(5.00, $valor));
         return self::formatearPromedio($limpio);
     }
 }
