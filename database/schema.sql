@@ -15,9 +15,39 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+CREATE DATABASE IF NOT EXISTS `notas_app`;
+USE `notas_app`;
+
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS `notas`;
+DROP TABLE IF EXISTS `materias`;
+DROP TABLE IF EXISTS `estudiantes`;
+DROP TABLE IF EXISTS `programas`;
+SET FOREIGN_KEY_CHECKS = 1;
+
 --
 -- Base de datos: `notas_app`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `programas`
+--
+
+CREATE TABLE `programas` (
+  `codigo` varchar(4) NOT NULL,
+  `nombre` varchar(30) NOT NULL,
+  PRIMARY KEY (`codigo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `programas`
+--
+
+INSERT INTO `programas` (`codigo`, `nombre`) VALUES
+('1111', 'Ing. Sistemas'),
+('2222', 'Ing. Multimedia');
 
 -- --------------------------------------------------------
 
@@ -28,8 +58,11 @@ SET time_zone = "+00:00";
 CREATE TABLE `estudiantes` (
   `codigo` varchar(5) NOT NULL,
   `nombre` varchar(30) NOT NULL,
-  `email` varchar(15) NOT NULL,
-  `programa` varchar(4) NOT NULL
+  `email` varchar(50) NOT NULL,
+  `programa` varchar(4) NOT NULL,
+  PRIMARY KEY (`codigo`),
+  KEY `fk_programas_estudiante` (`programa`),
+  CONSTRAINT `fk_programas_estudiante` FOREIGN KEY (`programa`) REFERENCES `programas` (`codigo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -51,7 +84,10 @@ INSERT INTO `estudiantes` (`codigo`, `nombre`, `email`, `programa`) VALUES
 CREATE TABLE `materias` (
   `codigo` varchar(4) NOT NULL,
   `nombre` varchar(50) NOT NULL,
-  `programa` varchar(4) NOT NULL
+  `programa` varchar(4) NOT NULL,
+  PRIMARY KEY (`codigo`),
+  KEY `fk_programas_materia` (`programa`),
+  CONSTRAINT `fk_programas_materia` FOREIGN KEY (`programa`) REFERENCES `programas` (`codigo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -76,7 +112,11 @@ CREATE TABLE `notas` (
   `estudiante` varchar(5) NOT NULL,
   `actividad` varchar(50) NOT NULL,
   `nota` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `fk_estudiantes_nota` (`estudiante`),
+  KEY `fk_materias_nota` (`materia`),
+  CONSTRAINT `fk_estudiantes_nota` FOREIGN KEY (`estudiante`) REFERENCES `estudiantes` (`codigo`),
+  CONSTRAINT `fk_materias_nota` FOREIGN KEY (`materia`) REFERENCES `materias` (`codigo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -89,48 +129,6 @@ INSERT INTO `notas` (`id`, `materia`, `estudiante`, `actividad`, `nota`) VALUES
 (3, '1102', '10001', 'Ejemplo 2', 3.00),
 (4, '1102', '10002', 'Ejemplo 2', 3.00),
 (5, '2201', '10003', 'Act. 1', 3.50);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `programas`
---
-
-CREATE TABLE `programas` (
-  `codigo` varchar(4) NOT NULL,
-  `nombre` varchar(30) NOT NULL,
-  PRIMARY KEY (`codigo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-INSERT INTO `programas` (`codigo`, `nombre`) VALUES
-('1111', 'Ing. Sistemas'),
-('2222', 'Ing. Multimedia');
-
---
--- Índices para tablas volcadas
---
-
-ALTER TABLE `estudiantes`
-  ADD PRIMARY KEY (`codigo`),
-  ADD KEY `fk_programas_estudiante` (`programa`);
-
-ALTER TABLE `materias`
-  ADD PRIMARY KEY (`codigo`),
-  ADD KEY `fk_programas_materia` (`programa`);
-
-ALTER TABLE `notas`
-  ADD KEY `fk_estudiantes_nota` (`estudiante`),
-  ADD KEY `fk_materias_nota` (`materia`);
-
-ALTER TABLE `estudiantes`
-  ADD CONSTRAINT `fk_programas_estudiante` FOREIGN KEY (`programa`) REFERENCES `programas` (`codigo`);
-
-ALTER TABLE `materias`
-  ADD CONSTRAINT `fk_programas_materia` FOREIGN KEY (`programa`) REFERENCES `programas` (`codigo`);
-
-ALTER TABLE `notas`
-  ADD CONSTRAINT `fk_estudiantes_nota` FOREIGN KEY (`estudiante`) REFERENCES `estudiantes` (`codigo`),
-  ADD CONSTRAINT `fk_materias_nota` FOREIGN KEY (`materia`) REFERENCES `materias` (`codigo`);
 
 COMMIT;
 

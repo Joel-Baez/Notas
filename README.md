@@ -10,10 +10,10 @@ Aplicación web desarrollada en PHP siguiendo los principios de POO y MVC para g
 
 ## Configuración de la base de datos
 
-Importe el script SQL suministrado en el enunciado dentro de una base de datos llamada `notas_app`. Puede hacerlo desde phpMyAdmin o usando la línea de comandos:
+Importe el script SQL suministrado en `database/schema.sql`. El archivo crea la base de datos `notas_app`, reinicia las tablas necesarias y carga datos de ejemplo, por lo que puede ejecutarlo directamente desde phpMyAdmin o la línea de comandos:
 
 ```bash
-mysql -u root -p < schema.sql
+mysql -u root -p < database/schema.sql
 ```
 
 El proyecto utiliza las siguientes variables de entorno opcionales para conectarse a la base de datos:
